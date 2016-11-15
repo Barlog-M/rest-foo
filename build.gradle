@@ -11,6 +11,12 @@ buildscript {
 	}
 }
 
+plugins {
+	// gradle dependencyUpdates -Drevision=release
+	id 'com.github.ben-manes.versions' version '0.13.0'
+	id 'com.palantir.docker' version '0.9.1'
+}
+
 apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: 'idea'
@@ -44,6 +50,22 @@ dependencies {
 
 jar {
 	archiveName 'app.jar'
+}
+
+// https://github.com/palantir/gradle-docker
+// gradle docker
+
+docker() {
+	bootRepackage
+
+	name 'app'
+	tags 'latest'
+	dockerfile 'src/main/docker/Dockerfile'
+	buildArgs([
+		PORT     : "8080",
+		JAVA_OPTS: "-Xms128m -Xmx256m"
+	])
+	pull true
 }
 
 wrapper {
